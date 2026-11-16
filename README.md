@@ -92,3 +92,4 @@ Dans `script.js`, **ne renomme pas les fonctions** : écris seulement leur conte
 Le lien de ton dépôt GitHub `atlas-explorer`, avant la fin des 1h30.
 
 **Validation :** P1 et P2 complets, et au moins un filtre de P3 qui fonctionne.
+

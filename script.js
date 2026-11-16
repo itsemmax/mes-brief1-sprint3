@@ -1,3 +1,8 @@
+const continent = document.querySelector("#continent");
+const recherche = document.querySelector("#recherche");
+const trie = document.querySelector("#recherche");
+const lists_pays = document.querySelector("#lists_pays");
+
 const API_URL = "https://countries.dev/countries";
 
 // Tous les pays reçus de l'API (rempli une seule fois, au chargement)
@@ -5,15 +10,27 @@ let allCountries = [];
 
 // TODO : récupère ici les éléments du DOM dont tu as besoin
 
-/**
- * Récupère tous les pays depuis l'API.
- * - Utilise fetch avec async/await.
- * - Appelée UNE SEULE FOIS, au chargement de la page.
- *
- * @returns {Promise<Array>} Le tableau de tous les pays.
- */
 async function fetchCountries() {
-  // TODO
+  try{
+  const response = await fetch(API_URL);
+  if (!response.ok) {
+    throw new Error(`error de récupérer des pays`);
+  }
+  allCountries = await response.json();
+  displayCountries(allCountries);
+  localStorage.setItem("countries",JSON.stringify(allCountries));
+  }
+  catch(error){
+    console.log(error);
+  }
+}
+allCountries = JSON.parse(localStorage.getItem("countries"))
+if(allCountries){
+  console.log(allCountries);
+  createCountryCard(allCountries);
+}
+else{
+  fetchCountries();
 }
 
 /**
@@ -24,9 +41,40 @@ async function fetchCountries() {
  * @returns {HTMLElement} La carte, prête à être ajoutée à la grille.
  */
 function createCountryCard(country) {
-  // TODO
-}
+  lists_pays.textContent = "";
+  country.forEach(country=>{
+    const article = document.createElement("article");
+    article.className = "border border-[#D9E0E8] w-80 rounded pb-3 flex flex-col gap-1";
+  
+    const img = document.createElement("img");
+    img.src = country.flags.png;
+    img.alt="";
+  
+    const h2 = document.createElement("h2");
+    h2.className ="px-2 text-[20px] font-bold";
+    h2.textContent = country.name;
 
+    const div = document.createElement("div");
+    div.className ="flex justify-between px-2";
+
+    const p = document.createElement("h2");
+    p.textContent = "Capitale";
+    const p1 = document.createElement("h2");
+    p1.textContent = country.capital;
+    div.append(p,p1);
+
+    const div1 = document.createElement("div");
+    div1.className ="flex justify-between px-2";
+
+    const p2 = document.createElement("h2");
+    p2.textContent = "Population";
+    const p3 = document.createElement("h2");
+    p3.textContent = country.population;
+    div1.append(p2,p3);
+    article.append(img,h2,div,div1);
+    lists_pays.append(article);
+  })
+}
 /**
  * Affiche une liste de pays dans la grille.
  * - Vide d'abord la grille (sinon les cartes s'accumulent).
@@ -103,3 +151,18 @@ async function init() {
 }
 
 init();
+
+function rechercher(test){
+  let text = recherche.value.toLowerCase();
+  let ff = test.filter(country => country.name.toLowerCase().includes(text))
+  return ff;
+}
+
+function rech_filter(){
+  let test = allCountries;
+  test = rechercher(test);
+  return test;
+}
+recherche.addEventListener("input",()=>{
+  createCountryCard(rech_filter());
+})
